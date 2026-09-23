@@ -1,0 +1,20 @@
+<a href="@Url.Action("Logout", "Home")">Cerrar Sesión</a>
+<a href="@Url.Action("CambiarContrasena", "Home")">Cambiar Contraseña</a>
+<!-- necesito que en la view de redsocial se muesten las 10 primeras publicaciones de la bsse de datos. 
+cuando scroleee hasta el final, debe aparece run boton de ver mas que me muestre las siguientes 10
+la publicacion debe tener  public int IdUsuario { get; set; }
+    public string? Titulo { get; set; }
+    public string? Descripcion { get; set; }
+    public string? Imagen { get; set; }
+    public DateTime? FechaPublicacion { get; set; } -->
+
+@foreach (var publicacion in ViewBag.Publicaciones)
+{
+    <div class="publicacion">
+        <h3>@publicacion.Titulo</h3>
+        <p>Publicado por: @publicacion.IdUsuario</p>
+        <p>@publicacion.Descripcion</p>
+        <img src="@publicacion.Imagen" alt="Imagen de la publicación"/>
+        <p>Publicado el: @publicacion.FechaPublicacion?.ToString("dd/MM/yyyy")</p>
+    </div>
+}

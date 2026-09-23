@@ -1,0 +1,13 @@
+<h3>Cambiar Contraseña</h3>
+<form action="@Url.Action("ActualizarContrasena", "Home")" method="post">
+    <div>
+        <label>Contraseña Actual:</label>
+        <input type="password" id="contrasenaActual" name="contrasenaActual" required />
+    </div>
+    <div>
+        <label>Nueva Contraseña:</label>
+        <input type="password" id="contrasenaNueva" name="contrasenaNueva" required />
+    </div>
+    <input type="hidden" name="ObjUsuario" value="@ViewBag.ObjUsuario" />
+    <button type="submit">Actualizar Contraseña</button>
+</form>
