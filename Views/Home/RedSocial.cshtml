@@ -1,20 +1,82 @@
+@{
+    var publicaciones = ViewBag.Publicaciones as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+}
+
 <a href="@Url.Action("Logout", "Home")">Cerrar Sesión</a>
 <a href="@Url.Action("CambiarContrasena", "Home")">Cambiar Contraseña</a>
-<!-- necesito que en la view de redsocial se muesten las 10 primeras publicaciones de la bsse de datos. 
-cuando scroleee hasta el final, debe aparece run boton de ver mas que me muestre las siguientes 10
-la publicacion debe tener  public int IdUsuario { get; set; }
-    public string? Titulo { get; set; }
-    public string? Descripcion { get; set; }
-    public string? Imagen { get; set; }
-    public DateTime? FechaPublicacion { get; set; } -->
 
-@foreach (var publicacion in ViewBag.Publicaciones)
-{
-    <div class="publicacion">
-        <h3>@publicacion.Titulo</h3>
-        <p>Publicado por: @publicacion.IdUsuario</p>
-        <p>@publicacion.Descripcion</p>
-        <img src="@publicacion.Imagen" alt="Imagen de la publicación"/>
-        <p>Publicado el: @publicacion.FechaPublicacion?.ToString("dd/MM/yyyy")</p>
-    </div>
-}
+<h2>Crear publicación</h2>
+<form action="@Url.Action("CrearPublicacion", "Home")" method="POST">
+    <label>Título:</label><br />
+    <input type="text" name="Titulo" placeholder="Título" required /><br /><br />
+
+    <label>Descripción:</label><br />
+    <textarea name="Descripcion" placeholder="¿Qué querés compartir?" required></textarea><br /><br />
+
+    <label>Imagen:</label><br />
+    <input type="text" name="Imagen" placeholder="Nombre de imagen" /><br /><br />
+
+    <button type="submit">Publicar</button>
+</form>
+
+<hr />
+
+<div id="listaPublicaciones">
+    @foreach (dynamic publicacion in publicaciones)
+    {
+        <div class="publicacion" data-id="@publicacion.Id">
+            <h3>@publicacion.Titulo</h3>
+            <p><strong>@publicacion.NombreUsuario</strong></p>
+            <p>@publicacion.Descripcion</p>
+
+            @if (!string.IsNullOrEmpty(publicacion.Imagen))
+            {
+                <img src="@publicacion.Imagen" alt="Imagen de publicación" />
+            }
+
+            <p>Publicado el: @publicacion.FechaPublicacion?.ToString("dd/MM/yyyy")</p>
+
+            <form action="@Url.Action("ToggleLike", "Home")" method="POST">
+                <input type="hidden" name="idPublicacion" value="@publicacion.Id" />
+                <button type="submit">@(publicacion.LeDioLike == 1 ? "Quitar Me Gusta" : "Me Gusta")</button>
+            </form>
+
+            <p>Cantidad de likes: @publicacion.CantidadLikes</p>
+
+            <div class="comentarios">
+                <p>Comentarios: @publicacion.CantidadComentarios</p>
+                <form action="@Url.Action("AgregarComentario", "Home")" method="POST">
+                    <input type="hidden" name="idPublicacion" value="@publicacion.Id" />
+                    <input type="text" name="texto" placeholder="Escribí un comentario" required />
+                    <button type="submit">Comentar</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+<button id="btnVerMas" type="button">Ver más</button>
+
+<script>
+    let offset = 10;
+
+    document.getElementById("btnVerMas").addEventListener("click", function () {
+        fetch("/Home/VerMasPublicaciones?offset=" + offset)
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (html) {
+                if (html.trim() === "") {
+                    document.getElementById("btnVerMas").disabled = true;
+                    document.getElementById("btnVerMas").textContent = "No hay más";
+                    return;
+                }
+
+                document.getElementById("listaPublicaciones").insertAdjacentHTML("beforeend", html);
+                offset += 10;
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    });
+</script>

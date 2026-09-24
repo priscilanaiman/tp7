@@ -1,0 +1,3 @@
+* agregar en program los codiguitos de session y bd, Etc.
+
+empezamos redsocial pero tiene q mostrar los primeros 10. cambiar foreach?
